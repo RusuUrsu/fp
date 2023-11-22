@@ -1,5 +1,7 @@
-import time
 import turtle
+import json
+import os
+
 
 def move_pen(pen,x,y):
     pen.penup()
@@ -8,7 +10,6 @@ def move_pen(pen,x,y):
 
 def A(x,y):
     p=turtle.Pen()
-    turtle.screensize(800,600)
     move_pen(p,x,y)
     p.left(65)
     p.forward(40)
@@ -227,7 +228,7 @@ def T(x,y):
 
 def U(x,y):
     p=turtle.Pen()
-    move_pen(p,x+36,y)
+    move_pen(p,x,y+36)
     p.right(90)
     p.forward(26)
     p.circle(10,180)
@@ -247,18 +248,18 @@ def V(x,y):
     p2.hideturtle()
 
 def W(x,y):
-    p2 = turtle.Pen()
     p = turtle.Pen()
+    p2 = turtle.Pen()
     move_pen(p, x + 15, y)
     move_pen(p2, x + 15, y)
-    p.left(115)
-    p2.left(65)
-    p.forward(40)
-    p2.forward(20)
-    p2.right(130)
-    p2.forward(20)
-    p2.left(130)
-    p2.forward(40)
+    p.left(110)
+    p2.left(75)
+    p.forward(38)
+    p2.forward(18)
+    p2.right(150)#130
+    p2.forward(18)
+    p2.left(145)
+    p2.forward(38)
     p.hideturtle()
     p2.hideturtle()
 
@@ -303,38 +304,73 @@ def punkt(x,y):
     p.circle(2)
     p.hideturtle()
 
+def excl(x,y):
+    p = turtle.Pen()
+    move_pen(p, x, y)
+    p.circle(2)
+    move_pen(p,x,y+8)
+    p.left(90)
+    p.forward(30)
+    p.hideturtle()
+
+def intre(x,y):
+    p = turtle.Pen()
+    move_pen(p, x, y)
+    p.circle(2)
+    move_pen(p, x, y + 8)
+    p.left(90)
+    p.forward(16)
+    p.right(80)
+    p.circle(11,240)
+    p.hideturtle()
+
 
 def on_W_key():
     turtle.forward(10)
     drawn_keys.append('W')
 
+
 def on_S_key():
     turtle.back(10)
     drawn_keys.append('S')
 
+
 def on_A_key():
     turtle.left(45)
     drawn_keys.append('A')
+
+
 def on_D_key():
     turtle.right(45)
     drawn_keys.append('D')
+
 
 def on_F_key():
     turtle.penup()
     drawn_keys.append('F')
 
+
 def on_G_key():
     turtle.pendown()
     drawn_keys.append('G')
 
+
+
 def on_Enter_key():
-    turtle.bye()
+    turtle.clear()
+    turtle.hideturtle()
+    aux={}
+    if ch not in user_signs.keys():#schreibt in einer Datei der benutzerdefinierte Worterbuch
+        aux[ch]=drawn_keys
+        with open('user_defined.txt', 'a') as cnv_f:
+            cnv_f.write(json.dumps(aux)+"\n")
+    exit()
 
 
 
-def draw(x,y,keys):
+def draw(x, y, keys):
     p = turtle.Pen()
-    move_pen(p,x,y)
+    move_pen(p, x, y)
     for key in keys:
         if key == 'W':
             p.forward(10)
@@ -348,81 +384,94 @@ def draw(x,y,keys):
             p.penup()
         elif key == 'G':
             p.pendown()
-
-
-
-    turtle.mainloop()
+    p.hideturtle()
 
 def draw_custom_character():
-    turtle.pendown()
-    turtle.listen()  # Start listening to keyboard events
+    turtle.showturtle()
+    turtle.listen()
     turtle.onkey(on_W_key, 'w')
     turtle.onkey(on_S_key, 's')
     turtle.onkey(on_A_key, 'a')
     turtle.onkey(on_D_key, 'd')
-    turtle.onkey(on_Enter_key, 'Return')
-
+    turtle.onkey(on_F_key,'f')
+    turtle.onkey(on_G_key,'g')
+    turtle.onkey(on_Enter_key,'Return')
     turtle.mainloop()
+
 
 drawn_keys = []
-def  main():
 
-    alphabet = {'A': A,'B': B,'C': C,'D': D,'E': E,'F': F,'G': G,'H': H,'I': I,'J': J,'K': K,'L': L,'M': M,'N': N,'O': O,'P': P,'Q': Q,
-                 'R': R,'S': S,'T': T,'U': U,'V': V,'W': W,'X': X,'Y': Y,'Z': Z,'.': punkt}
-    x,y = -440,350
-    while True:
-        turtle.Screen().reset()
-        screen = turtle.Screen()
-        print(alphabet)
+alphabet = {'A': A, 'B': B, 'C': C, 'D': D, 'E': E, 'F': F, 'G': G, 'H': H, 'I': I, 'J': J, 'K': K, 'L': L, 'M': M,
+                'N': N, 'O': O, 'P': P, 'Q': Q,
+                'R': R, 'S': S, 'T': T, 'U': U, 'V': V, 'W': W, 'X': X, 'Y': Y, 'Z': Z, '.': punkt, '!':excl, '?':intre}
+user_signs={}
 
-        n = input("""
-            1 -> Draw String
-            2 -> Add Charachter
-            0 -> Stop Program
-        """)
+x, y = -350, 270
+def main():
+    global x,y
+    if os.stat("written_words.txt").st_size>0:
+        with open('written_words.txt', 'r') as fl:
+            lns=fl.readlines()
 
-        if n == '0':
-            return
+    if os.stat("user_defined.txt").st_size > 0:
+        with open('user_defined.txt', 'r') as file:
+            lines=file.readlines()
+        aux={}
+        for line in lines:
+            aux=json.loads(line)
+            user_signs.update(aux)
 
-        if n == '1':
-            while True:
-                ch = input("Enter String: ")
-                if ch == '0':
-                    turtle.bye()
-                    break
-                word = list(ch)
+    if os.stat("written_words.txt").st_size > 0:
+        for l in lns:
+            l_ch = list(l)
+            for i in l_ch:
+                if i in alphabet.keys():
+                    alphabet[i](x, y)
+                elif i in user_signs.keys():
+                    draw(x, y, user_signs[i])
 
+                if x > 350:
+                    x = -350
+                    y -= 50
+                else:
+                    x += 40
+            x = -350
+            y -= 50
+    n = input("""
+                    0 -> Exit
+                    1 -> Draw String
+                    2 -> Add Charachter
+                """)
+    if n=='0':
+        exit()
+    elif n == '1':
+        chr = input("Enter String: ")
+        chr=chr.upper()
+        with open('written_words.txt', 'a') as file1:#speichert die Worter in einer Datei
+            file1.write(chr+"\n")
+        word = list(chr)
 
-                for i in word:
-                    if i in alphabet.keys():
-                        if i in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ.?!':
-                            alphabet[i](x,y)
-                        else:
-                            draw(x,y,alphabet[i])
+        for i in word:
+            if i in alphabet.keys():
+                alphabet[i](x, y)
+            elif i in user_signs.keys():
+                draw(x, y, user_signs[i])
 
-                        if x > 400:
-                            x = -440
-                            y -= 50
-                        else:
-                            x += 40
-
-        elif n == '2':
-            ch = input(""""
-                Type Character to add
-                
-                Press Enter when done
-            
-            """)
-            if ch not in alphabet:
+            if x > 350:
+                x = -350
+                y -= 50
+            else:
+                x += 40
+    elif n == '2':
+        global ch
+        while True:
+            ch= input()
+            if ch not in alphabet and ch not in user_signs:
                 drawn_keys.clear()
                 draw_custom_character()
-                alphabet[ch] = drawn_keys
-
-
-
-
+                break
+            else:
+                print("Is in dictionary, try an other")
     turtle.mainloop()
-    turtle.done()
 
-if __name__ == "__main__":
-    main()
+main()
